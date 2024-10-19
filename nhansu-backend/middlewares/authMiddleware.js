@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = (role) => {
     return (req, res, next) => {
         const token = req.headers['authorization']?.split(' ')[1];
-        if (!token) return res.status(401).json({ message: 'Không có token' });
+        if (!token) return res.status(401).json({ message: 'Chưa đăng nhập' });
 
         jwt.verify(token, 'giapminhduc', (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Token không hợp lệ' });
