@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../db');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // API để lấy tất cả lương
-router.get('/', (req, res) => {
+router.get('/', authMiddleware(), (req, res) => {
     connection.query('SELECT * FROM LUONG', (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -13,7 +14,7 @@ router.get('/', (req, res) => {
 });
 
 // API để thêm một lương mới
-router.post('/', (req, res) => {
+router.post('/', authMiddleware('admin'), (req, res) => {
     const { NV_MA, NN_MA, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh } = req.body;
     const query = `INSERT INTO LUONG (NV_MA, NN_MA, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh) VALUES (?, ?, ?, ?, ?)`;
     connection.query(query, [NV_MA, NN_MA, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh], (err, result) => {
@@ -35,7 +36,7 @@ router.post('/', (req, res) => {
 });
 
 // API để cập nhật thông tin của một lương theo NV_MA và NN_MA
-router.put('/:nv_ma/:nn_ma', (req, res) => {
+router.put('/:nv_ma/:nn_ma', authMiddleware('admin'), (req, res) => {
     const { nv_ma, nn_ma } = req.params;
     const { L_ThangNam, L_SoBuoiLam, L_LuongThucLanh } = req.body;
     const query = `UPDATE LUONG SET L_ThangNam = ?, L_SoBuoiLam = ?, L_LuongThucLanh = ? WHERE NV_MA = ? AND NN_MA = ?`;
@@ -48,7 +49,7 @@ router.put('/:nv_ma/:nn_ma', (req, res) => {
 });
 
 // API để xóa một lương theo NV_MA và NN_MA
-router.delete('/:nv_ma/:nn_ma', (req, res) => {
+router.delete('/:nv_ma/:nn_ma', authMiddleware('admin'), (req, res) => {
     const { nv_ma, nn_ma } = req.params;
     const query = `DELETE FROM LUONG WHERE NV_MA = ? AND NN_MA = ?`;
     connection.query(query, [nv_ma, nn_ma], (err, result) => {
@@ -60,7 +61,7 @@ router.delete('/:nv_ma/:nn_ma', (req, res) => {
 });
 
 // API để lấy thông tin chi tiết của một lương theo NV_MA và NN_MA
-router.get('/:nv_ma/:nn_ma', (req, res) => {
+router.get('/:nv_ma/:nn_ma', authMiddleware(), (req, res) => {
     const { nv_ma, nn_ma } = req.params;
     connection.query('SELECT * FROM LUONG WHERE NV_MA = ? AND NN_MA = ?', [nv_ma, nn_ma], (err, result) => {
         if (err) {

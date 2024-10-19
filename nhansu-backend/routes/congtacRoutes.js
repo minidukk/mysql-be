@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const connection = require('../db');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // API để lấy tất cả công tác
-router.get('/', (req, res) => {
+router.get('/', authMiddleware(), (req, res) => {
     connection.query('SELECT * FROM QT_CONGTAC', (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -13,7 +14,7 @@ router.get('/', (req, res) => {
 });
 
 // API để thêm một công tác mới
-router.post('/', (req, res) => {
+router.post('/', authMiddleware('admin'), (req, res) => {
     const { NV_MA, PB_MA, CV_MA, CT_BatDau, CT_KetThuc } = req.body;
     const query = `INSERT INTO QT_CONGTAC (NV_MA, PB_MA, CV_MA, CT_BatDau, CT_KetThuc) VALUES (?, ?, ?, ?, ?)`;
 
@@ -36,7 +37,7 @@ router.post('/', (req, res) => {
 
 
 // API để cập nhật thông tin của một công tác theo NV_MA, PB_MA và CV_MA
-router.put('/:nv_ma/:pb_ma/:cv_ma', (req, res) => {
+router.put('/:nv_ma/:pb_ma/:cv_ma', authMiddleware('admin'), (req, res) => {
     const { nv_ma, pb_ma, cv_ma } = req.params;
     const { CT_BatDau, CT_KetThuc } = req.body;
     const query = `UPDATE QT_CONGTAC SET CT_BatDau = ?, CT_KetThuc = ? WHERE NV_MA = ? AND PB_MA = ? AND CV_MA = ?`;
@@ -49,7 +50,7 @@ router.put('/:nv_ma/:pb_ma/:cv_ma', (req, res) => {
 });
 
 // API để xóa một công tác theo NV_MA, PB_MA và CV_MA
-router.delete('/:nv_ma/:pb_ma/:cv_ma', (req, res) => {
+router.delete('/:nv_ma/:pb_ma/:cv_ma', authMiddleware('admin'), (req, res) => {
     const { nv_ma, pb_ma, cv_ma } = req.params;
     const query = `DELETE FROM QT_CONGTAC WHERE NV_MA = ? AND PB_MA = ? AND CV_MA = ?`;
     connection.query(query, [nv_ma, pb_ma, cv_ma], (err, result) => {
@@ -61,7 +62,7 @@ router.delete('/:nv_ma/:pb_ma/:cv_ma', (req, res) => {
 });
 
 // API để lấy thông tin chi tiết của một công tác theo NV_MA, PB_MA và CV_MA
-router.get('/:nv_ma/:pb_ma/:cv_ma', (req, res) => {
+router.get('/:nv_ma/:pb_ma/:cv_ma', authMiddleware(), (req, res) => {
     const { nv_ma, pb_ma, cv_ma } = req.params;
     connection.query('SELECT * FROM QT_CONGTAC WHERE NV_MA = ? AND PB_MA = ? AND CV_MA = ?', [nv_ma, pb_ma, cv_ma], (err, result) => {
         if (err) {
