@@ -22,7 +22,7 @@ router.post('/', authMiddleware('admin'), (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = 'SELECT * FROM QT_CONGTAC WHERE CT_MA = ?';
+        const querySelect = 'SELECT * FROM QT_CONGTAC WHERE NV_MA = ?';
         connection.query(querySelect, [result.insertId], (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
