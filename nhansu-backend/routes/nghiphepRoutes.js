@@ -20,7 +20,17 @@ router.post('/', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Ngày nghỉ đã được thêm thành công', id: result.insertId });
+        const querySelect = `SELECT * FROM DM_LUONG WHERE NN_MA = ? AND NV_MA = ?`;
+        connection.query(querySelect, [NN_MA, NV_MA], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            res.status(200).json({
+                message: 'Nghỉ phép đã được thêm thành công',
+                data: rows[0]
+            });
+        });
     });
 });
 

@@ -20,7 +20,16 @@ router.post('/', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Phòng ban đã được thêm thành công', id: result.insertId });
+        const querySelect = `SELECT * FROM DM_LUONG WHERE PB_MA = ?`;
+        connection.query(querySelect, [PB_MA], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(200).json({
+                message: 'Phòng ban đã được thêm thành công',
+                data: rows[0]
+            });
+        });
     });
 });
 

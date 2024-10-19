@@ -20,6 +20,13 @@ router.post('/', (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
+        const querySelect = 'SELECT * FROM DM_CHUCVU WHERE CV_MA = ?';
+        connection.query(querySelect, [CV_MA], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(200).json(rows[0]);
+        })
         res.json({ message: 'Chức vụ đã được thêm thành công', id: result.insertId });
     });
 });

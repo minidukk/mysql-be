@@ -16,13 +16,24 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     const { NV_MA, PB_MA, CV_MA, CT_BatDau, CT_KetThuc } = req.body;
     const query = `INSERT INTO QT_CONGTAC (NV_MA, PB_MA, CV_MA, CT_BatDau, CT_KetThuc) VALUES (?, ?, ?, ?, ?)`;
+
     connection.query(query, [NV_MA, PB_MA, CV_MA, CT_BatDau, CT_KetThuc], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Công tác đã được thêm thành công', id: result.insertId });
+        const querySelect = 'SELECT * FROM QT_CONGTAC WHERE CT_MA = ?';
+        connection.query(querySelect, [result.insertId], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            res.status(200).json({
+                message: 'Công tác đã được thêm thành công',
+                data: rows[0]
+            });
+        });
     });
 });
+
 
 // API để cập nhật thông tin của một công tác theo NV_MA, PB_MA và CV_MA
 router.put('/:nv_ma/:pb_ma/:cv_ma', (req, res) => {
