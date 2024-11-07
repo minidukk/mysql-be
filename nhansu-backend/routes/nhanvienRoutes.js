@@ -15,14 +15,14 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một nhân viên mới
 router.post('/', authMiddleware('admin'), (req, res) => {
-    const { NV_MA, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT } = req.body;
-    const query = `INSERT INTO NHANVIEN (NV_MA, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT) VALUES (?, ?, ?, ?, ?)`;
-    connection.query(query, [NV_MA, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT], (err, result) => {
+    const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT } = req.body;
+    const query = `INSERT INTO NHANVIEN (NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT) VALUES (?, ?, ?, ?, ?)`;
+    connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = `SELECT * FROM NHANVIEN WHERE NV_MA = ?`;
-        connection.query(querySelect, [NV_MA], (err, rows) => {
+        const querySelect = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
+        connection.query(querySelect, [NV_Ma], (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
@@ -34,11 +34,11 @@ router.post('/', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để cập nhật thông tin của một nhân viên theo NV_MA
+// API để cập nhật thông tin của một nhân viên theo NV_Ma
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT } = req.body;
-    const query = `UPDATE NHANVIEN SET NV_TenNV = ?, NV_NgaySinh = ?, NV_DiaChi = ?, NV_SDT = ? WHERE NV_MA = ?`;
+    const query = `UPDATE NHANVIEN SET NV_TenNV = ?, NV_NgaySinh = ?, NV_DiaChi = ?, NV_SDT = ? WHERE NV_Ma = ?`;
     connection.query(query, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -47,10 +47,10 @@ router.put('/:id', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để xóa một nhân viên theo NV_MA
+// API để xóa một nhân viên theo NV_Ma
 router.delete('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
-    const query = `DELETE FROM NHANVIEN WHERE NV_MA = ?`;
+    const query = `DELETE FROM NHANVIEN WHERE NV_Ma = ?`;
     connection.query(query, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -59,10 +59,10 @@ router.delete('/:id', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để lấy thông tin chi tiết của một nhân viên theo NV_MA
+// API để lấy thông tin chi tiết của một nhân viên theo NV_Ma
 router.get('/:id', authMiddleware(), (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM NHANVIEN WHERE NV_MA = ?', [id], (err, result) => {
+    connection.query('SELECT * FROM NHANVIEN WHERE NV_Ma = ?', [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -70,10 +70,10 @@ router.get('/:id', authMiddleware(), (req, res) => {
     });
 });
 
-// API để lấy danh sách nhân viên theo phòng ban (PB_MA)
+// API để lấy danh sách nhân viên theo phòng ban (PB_Ma)
 router.get('/phongban/:pb_ma', authMiddleware(), (req, res) => {
     const { pb_ma } = req.params;
-    const query = `SELECT * FROM NHANVIEN n JOIN QT_CONGTAC q ON n.NV_MA = q.NV_MA WHERE q.PB_MA = ?`;
+    const query = `SELECT * FROM NHANVIEN n JOIN QT_CONGTAC q ON n.NV_Ma = q.NV_Ma WHERE q.PB_Ma = ?`;
     connection.query(query, [pb_ma], (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -82,10 +82,10 @@ router.get('/phongban/:pb_ma', authMiddleware(), (req, res) => {
     });
 });
 
-// API để lấy vai trò hiện tại của một nhân viên theo NV_MA
+// API để lấy vai trò hiện tại của một nhân viên theo NV_Ma
 router.get('/:id/role', authMiddleware(), (req, res) => {
     const { id } = req.params;
-    const query = `SELECT CV_MA, PB_MA, CT_BatDau, CT_KetThuc FROM QT_CONGTAC WHERE NV_MA = ? AND CT_KetThuc IS NULL`;
+    const query = `SELECT CV_Ma, PB_Ma, CT_BatDau, CT_KetThuc FROM QT_CONGTAC WHERE NV_Ma = ? AND CT_KetThuc IS NULL`;
     connection.query(query, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -94,10 +94,10 @@ router.get('/:id/role', authMiddleware(), (req, res) => {
     });
 });
 
-// API để lấy thông tin lương của một nhân viên theo NV_MA
+// API để lấy thông tin lương của một nhân viên theo NV_Ma
 router.get('/:id/salary', authMiddleware(), (req, res) => {
     const { id } = req.params;
-    const query = `SELECT * FROM DM_LUONG WHERE NV_MA = ?`;
+    const query = `SELECT * FROM DM_LUONG WHERE NV_Ma = ?`;
     connection.query(query, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -106,10 +106,10 @@ router.get('/:id/salary', authMiddleware(), (req, res) => {
     });
 });
 
-// API để lấy danh sách ngày nghỉ phép của một nhân viên theo NV_MA
+// API để lấy danh sách ngày nghỉ phép của một nhân viên theo NV_Ma
 router.get('/:id/leaves', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
-    const query = `SELECT * FROM NGAY_NGHI_PHEP WHERE NV_MA = ?`;
+    const query = `SELECT * FROM NGAY_NGHI_PHEP WHERE NV_Ma = ?`;
     connection.query(query, [id], (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
