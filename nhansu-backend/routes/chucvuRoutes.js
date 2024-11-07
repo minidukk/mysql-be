@@ -28,7 +28,7 @@ router.post('/', authMiddleware('admin'), (req, res) => {
             }
             res.status(200).json(rows[0]);
         })
-        res.json({ message: 'Chức vụ đã được thêm thành công', id: result.insertId });
+       // res.json({ message: 'Chức vụ đã được thêm thành công', id: result.insertId });
     });
 });
 

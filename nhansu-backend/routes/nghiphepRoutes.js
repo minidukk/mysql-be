@@ -21,7 +21,7 @@ router.post('/', authMiddleware(), (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = `SELECT * FROM DM_LUONG WHERE NN_MA = ? AND NV_MA = ?`;
+        const querySelect = `SELECT * FROM NGAY_NGHI_PHEP WHERE NN_MA = ? AND NV_MA = ?`;
         connection.query(querySelect, [NN_MA, NV_MA], (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
