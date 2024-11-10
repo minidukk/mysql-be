@@ -5,7 +5,28 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 // API để lấy tất cả lương
 router.get('/', authMiddleware(), (req, res) => {
-    connection.query('SELECT * FROM LUONG', (err, results) => {
+    const query = `
+        SELECT 
+            L.NN_Ma,
+            L.NV_Ma,
+            NV.NV_TenNV,
+            NV.NV_SDT,
+            NV.NV_DiaChi,
+            NV.NV_Role,
+            NP.NN_SoNgayNghi,
+            NP.NN_GhiChu,
+            L.L_ThangNam,
+            L.L_SoBuoiLam,
+            L.L_LuongThucLanh
+        FROM 
+            LUONG L
+        JOIN 
+            NHANVIEN NV ON L.NV_Ma = NV.NV_Ma
+        JOIN 
+            NGAY_NGHI_PHEP NP ON L.NN_Ma = NP.NN_Ma;
+    `;
+    
+    connection.query(query, (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -15,14 +36,14 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một lương mới
 router.post('/', authMiddleware('admin'), (req, res) => {
-    const { NV_MA, NN_MA, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh } = req.body;
-    const query = `INSERT INTO LUONG (NV_MA, NN_MA, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh) VALUES (?, ?, ?, ?, ?)`;
-    connection.query(query, [NV_MA, NN_MA, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh], (err, result) => {
+    const { NV_Ma, NN_Ma, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh } = req.body;
+    const query = `INSERT INTO LUONG (NV_Ma, NN_Ma, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh) VALUES (?, ?, ?, ?, ?)`;
+    connection.query(query, [NV_Ma, NN_Ma, L_ThangNam, L_SoBuoiLam, L_LuongThucLanh], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = `SELECT * FROM LUONG WHERE NV_MA = ? AND NN_MA = ?`;
-        connection.query(querySelect, [NV_MA, NN_MA], (err, rows) => {
+        const querySelect = `SELECT * FROM LUONG WHERE NV_Ma = ? AND NN_Ma = ?`;
+        connection.query(querySelect, [NV_Ma, NN_Ma], (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
@@ -35,12 +56,12 @@ router.post('/', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để cập nhật thông tin của một lương theo NV_MA và NN_MA
-router.put('/:nv_ma/:nn_ma', authMiddleware('admin'), (req, res) => {
-    const { nv_ma, nn_ma } = req.params;
+// API để cập nhật thông tin của một lương theo NV_Ma và NN_Ma
+router.put('/:nv_Ma/:nn_Ma', authMiddleware('admin'), (req, res) => {
+    const { nv_Ma, nn_Ma } = req.params;
     const { L_ThangNam, L_SoBuoiLam, L_LuongThucLanh } = req.body;
-    const query = `UPDATE LUONG SET L_ThangNam = ?, L_SoBuoiLam = ?, L_LuongThucLanh = ? WHERE NV_MA = ? AND NN_MA = ?`;
-    connection.query(query, [L_ThangNam, L_SoBuoiLam, L_LuongThucLanh, nv_ma, nn_ma], (err, result) => {
+    const query = `UPDATE LUONG SET L_ThangNam = ?, L_SoBuoiLam = ?, L_LuongThucLanh = ? WHERE NV_Ma = ? AND NN_Ma = ?`;
+    connection.query(query, [L_ThangNam, L_SoBuoiLam, L_LuongThucLanh, nv_Ma, nn_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -48,11 +69,11 @@ router.put('/:nv_ma/:nn_ma', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để xóa một lương theo NV_MA và NN_MA
-router.delete('/:nv_ma/:nn_ma', authMiddleware('admin'), (req, res) => {
-    const { nv_ma, nn_ma } = req.params;
-    const query = `DELETE FROM LUONG WHERE NV_MA = ? AND NN_MA = ?`;
-    connection.query(query, [nv_ma, nn_ma], (err, result) => {
+// API để xóa một lương theo NV_Ma và NN_Ma
+router.delete('/:nv_Ma/:nn_Ma', authMiddleware('admin'), (req, res) => {
+    const { nv_Ma, nn_Ma } = req.params;
+    const query = `DELETE FROM LUONG WHERE NV_Ma = ? AND NN_Ma = ?`;
+    connection.query(query, [nv_Ma, nn_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -60,10 +81,10 @@ router.delete('/:nv_ma/:nn_ma', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để lấy thông tin chi tiết của một lương theo NV_MA và NN_MA
-router.get('/:nv_ma/:nn_ma', authMiddleware(), (req, res) => {
-    const { nv_ma, nn_ma } = req.params;
-    connection.query('SELECT * FROM LUONG WHERE NV_MA = ? AND NN_MA = ?', [nv_ma, nn_ma], (err, result) => {
+// API để lấy thông tin chi tiết của một lương theo NV_Ma và NN_Ma
+router.get('/:nv_Ma/:nn_Ma', authMiddleware(), (req, res) => {
+    const { nv_Ma, nn_Ma } = req.params;
+    connection.query('SELECT * FROM LUONG WHERE NV_Ma = ? AND NN_Ma = ?', [nv_Ma, nn_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
