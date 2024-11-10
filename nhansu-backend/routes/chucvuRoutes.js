@@ -36,12 +36,23 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { CV_TenCV, CV_HSL } = req.body;
-    const query = `UPDATE DM_CHUCVU SET CV_TenCV = ?, CV_HSL = ? WHERE CV_Ma = ?`;
-    connection.query(query, [CV_TenCV, CV_HSL, id], (err, result) => {
+    const updateQuery = `UPDATE DM_CHUCVU SET CV_TenCV = ?, CV_HSL = ? WHERE CV_Ma = ?`;
+
+    connection.query(updateQuery, [CV_TenCV, CV_HSL, id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Thông tin chức vụ đã được cập nhật' });
+
+        // Nếu cập nhật thành công, truy vấn để lấy đối tượng vừa cập nhật
+        const selectQuery = `SELECT * FROM DM_CHUCVU WHERE CV_Ma = ?`;
+        connection.query(selectQuery, [id], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Trả về đối tượng đã được cập nhật
+            res.status(200).json({ message: 'Chức vụ đã được cập nhật', updatedData: rows[0] });
+        });
     });
 });
 

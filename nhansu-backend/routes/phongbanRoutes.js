@@ -36,14 +36,26 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { PB_TenPhongBan, PB_VanPhong, PB_MaTruongPhong } = req.body;
-    const query = `UPDATE PHONGBAN SET PB_TenPhongBan = ?, PB_VanPhong = ?, PB_MaTruongPhong = ? WHERE PB_Ma = ?`;
-    connection.query(query, [PB_TenPhongBan, PB_VanPhong, PB_MaTruongPhong, id], (err, result) => {
+    const updateQuery = `UPDATE PHONGBAN SET PB_TenPhongBan = ?, PB_VanPhong = ?, PB_MaTruongPhong = ? WHERE PB_Ma = ?`;
+
+    connection.query(updateQuery, [PB_TenPhongBan, PB_VanPhong, PB_MaTruongPhong, id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Thông tin phòng ban đã được cập nhật' });
+
+        // Thực hiện truy vấn để lấy lại thông tin phòng ban vừa được cập nhật
+        const selectQuery = `SELECT * FROM PHONGBAN WHERE PB_Ma = ?`;
+        connection.query(selectQuery, [id], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Trả về đối tượng phòng ban đã được cập nhật
+            res.status(200).json({ message: 'Thông tin phòng ban đã được cập nhật', updatedData: rows[0] });
+        });
     });
 });
+
 
 // API để xóa một phòng ban theo PB_Ma
 router.delete('/:id', authMiddleware('admin'), (req, res) => {

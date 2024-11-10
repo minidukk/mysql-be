@@ -38,12 +38,23 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT } = req.body;
-    const query = `UPDATE NHANVIEN SET NV_TenNV = ?, NV_NgaySinh = ?, NV_DiaChi = ?, NV_SDT = ? WHERE NV_Ma = ?`;
-    connection.query(query, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, id], (err, result) => {
+    const updateQuery = `UPDATE NHANVIEN SET NV_TenNV = ?, NV_NgaySinh = ?, NV_DiaChi = ?, NV_SDT = ? WHERE NV_Ma = ?`;
+
+    connection.query(updateQuery, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Thông tin nhân viên đã được cập nhật' });
+
+        // Nếu cập nhật thành công, thực hiện truy vấn để lấy thông tin nhân viên vừa được cập nhật
+        const selectQuery = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
+        connection.query(selectQuery, [id], (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Trả về đối tượng đã được cập nhật
+            res.status(200).json({ message: 'Thông tin nhân viên đã được cập nhật', updatedData: rows[0] });
+        });
     });
 });
 
