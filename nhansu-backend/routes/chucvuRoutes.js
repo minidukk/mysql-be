@@ -16,7 +16,7 @@ router.get('/', authMiddleware(), (req, res) => {
 // API để thêm một chức vụ mới
 router.post('/', authMiddleware('admin'), (req, res) => {
     const { CV_Ma, CV_TenCV, CV_HSL } = req.body;
-    const query = `INSERT INTO DM_CHUCVU (CV_Ma, CV_TenCV, CV_HSL) VALUES (?, ?, ?)`;
+    const query = `CALL sp_ThemChucVu(?, ?, ?)`;
     connection.query(query, [CV_Ma, CV_TenCV, CV_HSL], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -36,8 +36,8 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { CV_TenCV, CV_HSL } = req.body;
-    const query = `UPDATE DM_CHUCVU SET CV_TenCV = ?, CV_HSL = ? WHERE CV_Ma = ?`;
-    connection.query(query, [CV_TenCV, CV_HSL, id], (err, result) => {
+    const query = `CALL sp_CapNhatThongTinCV(?, ?, ?)`;
+    connection.query(query, [id, CV_TenCV, CV_HSL], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -48,7 +48,7 @@ router.put('/:id', authMiddleware('admin'), (req, res) => {
 // API để xóa một chức vụ theo CV_Ma
 router.delete('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
-    const query = `DELETE FROM DM_CHUCVU WHERE CV_Ma = ?`;
+    const query = `CALL sp_XoaChucVu(?)`;
     connection.query(query, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -60,7 +60,7 @@ router.delete('/:id', authMiddleware('admin'), (req, res) => {
 // API để lấy thông tin chi tiết của một chức vụ theo CV_Ma
 router.get('/:id', authMiddleware(), (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM DM_CHUCVU WHERE CV_Ma = ?', [id], (err, result) => {
+    connection.query('CALL sp_XemThongTinCV(?)', [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }

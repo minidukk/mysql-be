@@ -45,7 +45,35 @@ router.get('/me', (req, res) => {
     jwt.verify(token, 'giapminhduc', (err, decoded) => {
         if (err) return res.status(403).json({ message: 'Token không hợp lệ' });
 
-        const query = 'SELECT NV_Ma, NV_TenNV, NV_Role, NV_KiemDuyet FROM NHANVIEN WHERE NV_Ma = ?';
+        const query = `
+            SELECT 
+                NV.NV_Ma, 
+                NV.NV_TenNV, 
+                NV.NV_NgaySinh, 
+                NV.NV_DiaChi, 
+                NV.NV_SDT, 
+                NV.NV_MatKhau, 
+                NV.NV_Role, 
+                NV.NV_KiemDuyet, 
+                PB.PB_Ma, 
+                PB.PB_TenPhongBan, 
+                PB.PB_VanPhong, 
+                CV.CV_Ma, 
+                CV.CV_TenCV, 
+                CV.CV_HSL, 
+                QT.CT_BatDau, 
+                QT.CT_KetThuc
+            FROM 
+                NHANVIEN NV
+            JOIN 
+                QT_CONGTAC QT ON NV.NV_Ma = QT.NV_Ma
+            JOIN 
+                PHONGBAN PB ON QT.PB_Ma = PB.PB_Ma
+            JOIN 
+                DM_CHUCVU CV ON QT.CV_Ma = CV.CV_Ma
+            ORDER BY 
+                NV.NV_Ma
+        `;
         connection.query(query, [decoded.id], (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
             if (results.length === 0) return res.status(404).json({ message: 'Người dùng không tồn tại' });

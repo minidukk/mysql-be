@@ -29,7 +29,7 @@ router.get('/', authMiddleware(), (req, res) => {
         JOIN 
             DM_CHUCVU CV ON QT.CV_Ma = CV.CV_Ma;
     `;
-    
+
     connection.query(query, (err, results) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -42,7 +42,7 @@ router.get('/', authMiddleware(), (req, res) => {
 // API để thêm một công tác mới
 router.post('/', authMiddleware('admin'), (req, res) => {
     const { NV_Ma, PB_Ma, CV_Ma, CT_BatDau, CT_KetThuc } = req.body;
-    const query = `INSERT INTO QT_CONGTAC (NV_Ma, PB_Ma, CV_Ma, CT_BatDau, CT_KetThuc) VALUES (?, ?, ?, ?, ?)`;
+    const query = `CALL sp_ThemCongTac(?, ?, ?, ?, ?)`;
 
     connection.query(query, [NV_Ma, PB_Ma, CV_Ma, CT_BatDau, CT_KetThuc], (err, result) => {
         if (err) {
@@ -66,8 +66,8 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:nv_Ma/:pb_Ma/:cv_Ma', authMiddleware('admin'), (req, res) => {
     const { nv_Ma, pb_Ma, cv_Ma } = req.params;
     const { CT_BatDau, CT_KetThuc } = req.body;
-    const query = `UPDATE QT_CONGTAC SET CT_BatDau = ?, CT_KetThuc = ? WHERE NV_Ma = ? AND PB_Ma = ? AND CV_Ma = ?`;
-    connection.query(query, [CT_BatDau, CT_KetThuc, nv_Ma, pb_Ma, cv_Ma], (err, result) => {
+    const query = `CALL sp_CapNhatThongTinCT(?, ?, ?, ?, ?)`;
+    connection.query(query, [nv_Ma, pb_Ma, cv_Ma, CT_BatDau, CT_KetThuc], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -78,7 +78,7 @@ router.put('/:nv_Ma/:pb_Ma/:cv_Ma', authMiddleware('admin'), (req, res) => {
 // API để xóa một công tác theo NV_Ma, PB_Ma và CV_Ma
 router.delete('/:nv_Ma/:pb_Ma/:cv_Ma', authMiddleware('admin'), (req, res) => {
     const { nv_Ma, pb_Ma, cv_Ma } = req.params;
-    const query = `DELETE FROM QT_CONGTAC WHERE NV_Ma = ? AND PB_Ma = ? AND CV_Ma = ?`;
+    const query = `CALL sp_XoaCongTac(?, ?, ?)`;
     connection.query(query, [nv_Ma, pb_Ma, cv_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -87,10 +87,19 @@ router.delete('/:nv_Ma/:pb_Ma/:cv_Ma', authMiddleware('admin'), (req, res) => {
     });
 });
 
-// API để lấy thông tin chi tiết của một công tác theo NV_Ma, PB_Ma và CV_Ma
-router.get('/:nv_Ma/:pb_Ma/:cv_Ma', authMiddleware(), (req, res) => {
-    const { nv_Ma, pb_Ma, cv_Ma } = req.params;
-    connection.query('SELECT * FROM QT_CONGTAC WHERE NV_Ma = ? AND PB_Ma = ? AND CV_Ma = ?', [nv_Ma, pb_Ma, cv_Ma], (err, result) => {
+// API để lấy thông tin chi tiết của một công tác theo NV_Ma
+router.get('/:nv_Ma', authMiddleware(), (req, res) => {
+    const { nv_Ma } = req.params;
+    connection.query(`SELECT 
+                        QT.NV_Ma, 
+                        QT.PB_Ma, 
+                        QT.CV_Ma, 
+                        QT.CT_BatDau, 
+                        QT.CT_KetThuc
+                    FROM 
+                        QT_CONGTAC QT
+                    WHERE 
+                        QT.NV_Ma = ?;`, [nv_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
