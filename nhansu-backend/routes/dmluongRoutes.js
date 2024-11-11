@@ -54,19 +54,11 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 });
 
 // API để cập nhật thông tin của một lương theo NV_Ma
-<<<<<<< HEAD
-router.put('/:nv_ma', authMiddleware('admin'), (req, res) => {
-    const { nv_ma } = req.params;
-    const { LUONG_LuongCoBan, LUONG_PhuCap, LUONG_KhauTruThue, LUONG_BatDau, LUONG_KetThuc } = req.body;
-    const query = `UPDATE DM_LUONG SET LUONG_LuongCoBan = ?, LUONG_PhuCap = ?, LUONG_KhauTruThue = ?, LUONG_BatDau = ?, LUONG_KetThuc = ? WHERE NV_Ma = ?`;
-    connection.query(query, [LUONG_LuongCoBan, LUONG_PhuCap, LUONG_KhauTruThue, LUONG_BatDau, LUONG_KetThuc, nv_ma], (err, result) => {
-=======
 router.put('/:nv_Ma', authMiddleware('admin'), (req, res) => {
     const { nv_Ma } = req.params;
     const { LUONG_LuongCoBan, LUONG_PhuCap, LUONG_KhauTruThue, LUONG_BatDau, LUONG_KetThuc } = req.body;
     const query = `UPDATE DM_LUONG SET LUONG_LuongCoBan = ?, LUONG_PhuCap = ?, LUONG_KhauTruThue = ?, LUONG_BatDau = ?, LUONG_KetThuc = ? WHERE NV_Ma = ?`;
     connection.query(query, [LUONG_LuongCoBan, LUONG_PhuCap, LUONG_KhauTruThue, LUONG_BatDau, LUONG_KetThuc, nv_Ma], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -75,17 +67,10 @@ router.put('/:nv_Ma', authMiddleware('admin'), (req, res) => {
 });
 
 // API để xóa một lương theo NV_Ma
-<<<<<<< HEAD
-router.delete('/:nv_ma', authMiddleware('admin'), (req, res) => {
-    const { nv_ma } = req.params;
-    const query = `DELETE FROM DM_LUONG WHERE NV_Ma = ?`;
-    connection.query(query, [nv_ma], (err, result) => {
-=======
 router.delete('/:nv_Ma', authMiddleware('admin'), (req, res) => {
     const { nv_Ma } = req.params;
     const query = `DELETE FROM DM_LUONG WHERE NV_Ma = ?`;
     connection.query(query, [nv_Ma], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -94,15 +79,9 @@ router.delete('/:nv_Ma', authMiddleware('admin'), (req, res) => {
 });
 
 // API để lấy thông tin chi tiết của một lương theo NV_Ma
-<<<<<<< HEAD
-router.get('/:nv_ma', authMiddleware(), (req, res) => {
-    const { nv_ma } = req.params;
-    connection.query('SELECT * FROM DM_LUONG WHERE NV_Ma = ?', [nv_ma], (err, result) => {
-=======
 router.get('/:nv_Ma', authMiddleware(), (req, res) => {
     const { nv_Ma } = req.params;
     connection.query('SELECT * FROM DM_LUONG WHERE NV_Ma = ?', [nv_Ma], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }

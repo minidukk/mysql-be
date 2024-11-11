@@ -15,21 +15,17 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một nhân viên mới
 router.post('/', authMiddleware('admin'), (req, res) => {
-<<<<<<< HEAD
-    const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT } = req.body;
-    const query = `INSERT INTO NHANVIEN (NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT) VALUES (?, ?, ?, ?, ?)`;
-    connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT], (err, result) => {
-=======
     const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
     const query = `CALL sp_ThemNV(?, ?, ?, ?, ?, ?)`;
     connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
+            console.log(err.message);
             return res.status(500).json({ error: err.message });
         }
         const querySelect = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
         connection.query(querySelect, [NV_Ma], (err, rows) => {
             if (err) {
+                console.log(err);
                 return res.status(500).json({ error: err.message });
             }
             res.status(200).json({
@@ -43,16 +39,9 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 // API để cập nhật thông tin của một nhân viên theo NV_Ma
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
-<<<<<<< HEAD
-    const { NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT } = req.body;
-    const updateQuery = `UPDATE NHANVIEN SET NV_TenNV = ?, NV_NgaySinh = ?, NV_DiaChi = ?, NV_SDT = ? WHERE NV_Ma = ?`;
-
-    connection.query(updateQuery, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, id], (err, result) => {
-=======
     const { NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
     const query = `CALL sp_CapNhatThongTinNV(?, ?, ?, ?, ?, ?)`;
     connection.query(query, [id, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -73,11 +62,7 @@ router.put('/:id', authMiddleware('admin'), (req, res) => {
 // API để xóa một nhân viên theo NV_Ma
 router.delete('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
-<<<<<<< HEAD
-    const query = `DELETE FROM NHANVIEN WHERE NV_Ma = ?`;
-=======
     const query = `CALL sp_XoaNV(?)`;
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
     connection.query(query, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
@@ -89,11 +74,7 @@ router.delete('/:id', authMiddleware('admin'), (req, res) => {
 // API để lấy thông tin chi tiết của một nhân viên theo NV_Ma
 router.get('/:id', authMiddleware(), (req, res) => {
     const { id } = req.params;
-<<<<<<< HEAD
-    connection.query('SELECT * FROM NHANVIEN WHERE NV_Ma = ?', [id], (err, result) => {
-=======
     connection.query('call sp_ThongTinNV(?)', [id], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -102,17 +83,10 @@ router.get('/:id', authMiddleware(), (req, res) => {
 });
 
 // API để lấy danh sách nhân viên theo phòng ban (PB_Ma)
-<<<<<<< HEAD
-router.get('/phongban/:pb_ma', authMiddleware(), (req, res) => {
-    const { pb_ma } = req.params;
-    const query = `SELECT * FROM NHANVIEN n JOIN QT_CONGTAC q ON n.NV_Ma = q.NV_Ma WHERE q.PB_Ma = ?`;
-    connection.query(query, [pb_ma], (err, results) => {
-=======
 router.get('/phongban/:pb_Ma', authMiddleware(), (req, res) => {
     const { pb_Ma } = req.params;
     const query = `CALL sp_NhanVienCuaPB(?)`;
     connection.query(query, [pb_Ma], (err, results) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }

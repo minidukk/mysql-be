@@ -36,14 +36,9 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { CV_TenCV, CV_HSL } = req.body;
-<<<<<<< HEAD
     const updateQuery = `UPDATE DM_CHUCVU SET CV_TenCV = ?, CV_HSL = ? WHERE CV_Ma = ?`;
 
     connection.query(updateQuery, [CV_TenCV, CV_HSL, id], (err, result) => {
-=======
-    const query = `UPDATE DM_CHUCVU SET CV_TenCV = ?, CV_HSL = ? WHERE CV_Ma = ?`;
-    connection.query(query, [CV_TenCV, CV_HSL, id], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }

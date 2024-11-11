@@ -49,14 +49,8 @@ router.post('/', authMiddleware('admin'), (req, res) => {
 router.put('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
     const { PB_TenPhongBan, PB_VanPhong, PB_MaTruongPhong } = req.body;
-<<<<<<< HEAD
-    const updateQuery = `UPDATE PHONGBAN SET PB_TenPhongBan = ?, PB_VanPhong = ?, PB_MaTruongPhong = ? WHERE PB_Ma = ?`;
-
-    connection.query(updateQuery, [PB_TenPhongBan, PB_VanPhong, PB_MaTruongPhong, id], (err, result) => {
-=======
     const query = `CALL sp_CapNhatThongTinPB(?, ?, ?, ?)`;
     connection.query(query, [id, PB_TenPhongBan, PB_VanPhong, PB_MaTruongPhong], (err, result) => {
->>>>>>> 9a51ce3e5c1560330ad685df8c53b421632a954c
         if (err) {
             return res.status(500).json({ error: err.message });
         }
