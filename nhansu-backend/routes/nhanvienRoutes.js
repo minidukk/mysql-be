@@ -16,9 +16,9 @@ router.get('/', authMiddleware(), (req, res) => {
 // API để thêm một nhân viên mới
 router.post('/', authMiddleware('admin'), (req, res) => {
     const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
-    console.log(NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau);
-    const query = `CALL sp_ThemNV(?, ?, ?, ?, ?, ?)`;
-    connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
+    console.log(NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau);
+    const query = `CALL sp_ThemNV(?, ?, ?, ?, ?)`;
+    connection.query(query, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
         if (err) {
             console.log(err.message);
             return res.status(500).json({ error: err.message });

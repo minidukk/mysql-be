@@ -13,7 +13,7 @@ router.get('/', authMiddleware(), (req, res) => {
             NV.NV_SDT,
             NV.NV_DiaChi,
             NV.NV_Role,
-            NG.NN_SoNgayNghi,
+            NG.NN_NgayNghi,
             NG.NN_GhiChu
         FROM 
             NGAY_NGHI_PHEP NG
@@ -32,14 +32,14 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một ngày nghỉ mới
 router.post('/', authMiddleware(), (req, res) => {
-    const { NN_Ma, NV_Ma, NN_SoNgayNghi, NN_GhiChu } = req.body;
-    const query = `INSERT INTO NGAY_NGHI_PHEP (NN_Ma, NV_Ma, NN_SoNgayNghi, NN_GhiChu) VALUES (?, ?, ?, ?)`;
-    connection.query(query, [NN_Ma, NV_Ma, NN_SoNgayNghi, NN_GhiChu], (err, result) => {
+    const { NV_Ma, NN_NgayNghi, NN_GhiChu } = req.body;
+    const query = `call sp_ThemNgayNghi(?, ?, ?)`;
+    connection.query(query, [NV_Ma, NN_NgayNghi, NN_GhiChu], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = `SELECT * FROM NGAY_NGHI_PHEP WHERE NN_Ma = ? AND NV_Ma = ?`;
-        connection.query(querySelect, [NN_Ma, NV_Ma], (err, rows) => {
+        const querySelect = `SELECT * FROM NGAY_NGHI_PHEP WHERE NN_GhiChu = ? AND NV_Ma = ?`;
+        connection.query(querySelect, [NN_GhiChu, NV_Ma], (err, rows) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
@@ -78,13 +78,13 @@ router.delete('/:nn_Ma/:nv_Ma', authMiddleware('admin'), (req, res) => {
 });
 
 // API để lấy thông tin chi tiết của một ngày nghỉ theo NN_Ma và NV_Ma
-router.get('/:nn_Ma/:nv_Ma', authMiddleware(), (req, res) => {
-    const { nn_Ma, nv_Ma } = req.params;
-    connection.query('SELECT * FROM NGAY_NGHI_PHEP WHERE NN_Ma = ? AND NV_Ma = ?', [nn_Ma, nv_Ma], (err, result) => {
+router.get('/:nv_Ma', authMiddleware(), (req, res) => {
+    const { nv_Ma } = req.params;
+    connection.query('SELECT * FROM NGAY_NGHI_PHEP WHERE NV_Ma = ?', [nv_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json(result[0]);
+        res.json(result);
     });
 });
 

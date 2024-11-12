@@ -5,10 +5,10 @@ const router = express.Router();
 
 // Đăng ký
 router.post('/register', (req, res) => {
-    const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
+    const { NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
 
-    const query = 'INSERT INTO NHANVIEN (NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau, NV_Role, NV_KiemDuyet) VALUES (?, ?, ?, ?, ?, ?, "user", 0)';
-    connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
+    const query = 'CALL sp_ThemNV(?, ?, ?, ?, ?)';
+    connection.query(query, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json({ message: 'Đăng ký thành công', id: result.insertId });
     });
