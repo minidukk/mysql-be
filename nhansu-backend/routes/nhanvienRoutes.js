@@ -15,16 +15,16 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một nhân viên mới
 router.post('/', authMiddleware('admin'), (req, res) => {
-    const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
-    console.log(NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau);
-    const query = `CALL sp_ThemNV(?, ?, ?, ?, ?, ?)`;
-    connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
+    const {NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
+    console.log(NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau);
+    const query = `CALL sp_ThemNV(?, ?, ?, ?, ?)`;
+    connection.query(query, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
         if (err) {
             console.log(err.message);
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
-        connection.query(querySelect, [NV_Ma], (err, rows) => {
+        const querySelect = `SELECT * FROM NHANVIEN WHERE NV_SDT = ?`;
+        connection.query(querySelect, [NV_SDT], (err, rows) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ error: err.message });

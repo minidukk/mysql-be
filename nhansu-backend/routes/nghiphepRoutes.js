@@ -13,8 +13,9 @@ router.get('/', authMiddleware(), (req, res) => {
             NV.NV_SDT,
             NV.NV_DiaChi,
             NV.NV_Role,
-            NG.NN_SoNgayNghi,
-            NG.NN_GhiChu
+            NG.NN_NgayNghi,
+            NG.NN_GhiChu,
+            NG.NN_KiemDuyet
         FROM 
             NGAY_NGHI_PHEP NG
         JOIN 
@@ -32,9 +33,9 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một ngày nghỉ mới
 router.post('/', authMiddleware(), (req, res) => {
-    const { NN_Ma, NV_Ma, NN_SoNgayNghi, NN_GhiChu } = req.body;
-    const query = `INSERT INTO NGAY_NGHI_PHEP (NN_Ma, NV_Ma, NN_SoNgayNghi, NN_GhiChu) VALUES (?, ?, ?, ?)`;
-    connection.query(query, [NN_Ma, NV_Ma, NN_SoNgayNghi, NN_GhiChu], (err, result) => {
+    const { NN_Ma, NV_Ma, NN_NgayNghi, NN_GhiChu } = req.body;
+    const query = `INSERT INTO NGAY_NGHI_PHEP (NN_Ma, NV_Ma, NN_NgayNghi, NN_GhiChu) VALUES (?, ?, ?, ?)`;
+    connection.query(query, [NN_Ma, NV_Ma, NN_NgayNghi, NN_GhiChu], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -55,9 +56,9 @@ router.post('/', authMiddleware(), (req, res) => {
 // API để cập nhật thông tin của một ngày nghỉ theo NN_Ma và NV_Ma
 router.put('/:nn_Ma/:nv_Ma', authMiddleware('admin'), (req, res) => {
     const { nn_Ma, nv_Ma } = req.params;
-    const { NN_SoNgayNghi, NN_GhiChu } = req.body;
-    const query = `UPDATE NGAY_NGHI_PHEP SET NN_SoNgayNghi = ?, NN_GhiChu = ? WHERE NN_Ma = ? AND NV_Ma = ?`;
-    connection.query(query, [NN_SoNgayNghi, NN_GhiChu, nn_Ma, nv_Ma], (err, result) => {
+    const { NN_NgayNghi, NN_GhiChu } = req.body;
+    const query = `UPDATE NGAY_NGHI_PHEP SET NN_NgayNghi = ?, NN_GhiChu = ? WHERE NN_Ma = ? AND NV_Ma = ?`;
+    connection.query(query, [NN_NgayNghi, NN_GhiChu, nn_Ma, nv_Ma], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
