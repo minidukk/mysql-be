@@ -170,4 +170,19 @@ router.get("/:nv_ma/:pb_ma/:cv_ma", authMiddleware(), (req, res) => {
   );
 });
 
+// API để lấy thông tin chi tiết của một công tác theo NV_Ma
+router.get('/:nv_Ma', authMiddleware(), (req, res) => {
+  const { nv_Ma } = req.params;
+  connection.query(`SELECT *
+                  FROM 
+                      QT_CONGTAC QT
+                  WHERE 
+                      QT.NV_Ma = ?;`, [nv_Ma], (err, result) => {
+      if (err) {
+          return res.status(500).json({ error: err.message });
+      }
+      res.json(result[0]);
+  });
+});
+
 module.exports = router;

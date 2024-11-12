@@ -125,4 +125,15 @@ router.get('/:nv_Ma/:nn_Ma', authMiddleware(), (req, res) => {
     });
 });
 
+// API để lấy thông tin chi tiết của một lương theo NV_Ma
+router.get('/:nv_Ma', authMiddleware(), (req, res) => {
+  const { nv_Ma } = req.params;
+  connection.query('SELECT * FROM LUONG WHERE NV_Ma = ?', [nv_Ma], (err, result) => {
+      if (err) {
+          return res.status(500).json({ error: err.message });
+      }
+      res.json(result[0]);
+  });
+});
+
 module.exports = router;
