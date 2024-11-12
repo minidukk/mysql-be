@@ -5,30 +5,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 // API để lấy tất cả công tác
 router.get("/", authMiddleware(), (req, res) => {
-  const query = `
-        SELECT 
-            QT.NV_Ma,
-            NV.NV_TenNV,
-            NV.NV_SDT,
-            NV.NV_DiaChi,
-            NV.NV_Role,
-            QT.PB_Ma,
-            PB.PB_TenPhongBan,
-            PB.PB_VanPhong,
-            QT.CV_Ma,
-            CV.CV_TenCV,
-            CV.CV_HSL,
-            QT.CT_BatDau,
-            QT.CT_KetThuc
-        FROM 
-            QT_CONGTAC QT
-        JOIN 
-            NHANVIEN NV ON QT.NV_Ma = NV.NV_Ma
-        JOIN 
-            PHONGBAN PB ON QT.PB_Ma = PB.PB_Ma
-        JOIN 
-            DM_CHUCVU CV ON QT.CV_Ma = CV.CV_Ma;
-    `;
+  const query = `SELECT * FROM v_ChiTietCongTac`;
 
   connection.query(query, (err, results) => {
     if (err) {
@@ -79,20 +56,16 @@ router.post("/", authMiddleware("admin"), (req, res) => {
               QT.NV_Ma = ? AND QT.PB_Ma = ? AND QT.CV_Ma = ?`;
 
       // Sử dụng các tham số của công tác vừa thêm để lấy đúng dữ liệu
-      connection.query(
-        querySelect,
-        [NV_Ma, PB_Ma, CV_Ma],
-        (err, rows) => {
-          if (err) {
-            console.log(err);
-            return res.status(500).json({ error: err.message });
-          }
-          res.status(200).json({
-            message: "Công tác đã được thêm thành công",
-            updatedData: rows[0],
-          });
+      connection.query(querySelect, [NV_Ma, PB_Ma, CV_Ma], (err, rows) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({ error: err.message });
         }
-      );
+        res.status(200).json({
+          message: "Công tác đã được thêm thành công",
+          updatedData: rows[0],
+        });
+      });
     }
   );
 });
