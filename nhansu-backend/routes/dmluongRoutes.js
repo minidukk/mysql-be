@@ -85,7 +85,7 @@ router.get('/:nv_Ma', authMiddleware(), (req, res) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
-        res.json(result[0]);
+        res.json(result);
     });
 });
 

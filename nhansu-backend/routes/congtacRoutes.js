@@ -173,11 +173,31 @@ router.get("/:nv_ma/:pb_ma/:cv_ma", authMiddleware(), (req, res) => {
 // API để lấy thông tin chi tiết của một công tác theo NV_Ma
 router.get('/:nv_Ma', authMiddleware(), (req, res) => {
   const { nv_Ma } = req.params;
-  connection.query(`SELECT *
-                  FROM 
-                      QT_CONGTAC QT
-                  WHERE 
-                      QT.NV_Ma = ?;`, [nv_Ma], (err, result) => {
+  connection.query(`
+          SELECT 
+              QT.NV_Ma,
+              NV.NV_TenNV,
+              NV.NV_SDT,
+              NV.NV_DiaChi,
+              NV.NV_Role,
+              QT.PB_Ma,
+              PB.PB_TenPhongBan,
+              PB.PB_VanPhong,
+              QT.CV_Ma,
+              CV.CV_TenCV,
+              CV.CV_HSL,
+              QT.CT_BatDau,
+              QT.CT_KetThuc
+          FROM 
+              QT_CONGTAC QT
+          JOIN 
+              NHANVIEN NV ON QT.NV_Ma = NV.NV_Ma
+          JOIN 
+              PHONGBAN PB ON QT.PB_Ma = PB.PB_Ma
+          JOIN 
+              DM_CHUCVU CV ON QT.CV_Ma = CV.CV_Ma
+          WHERE 
+              QT.NV_Ma = ?`, [nv_Ma], (err, result) => {
       if (err) {
           return res.status(500).json({ error: err.message });
       }

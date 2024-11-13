@@ -132,8 +132,48 @@ router.get('/:nv_Ma', authMiddleware(), (req, res) => {
       if (err) {
           return res.status(500).json({ error: err.message });
       }
-      res.json(result[0]);
+      res.json(result);
   });
 });
+
+
+router.get('/luong/:nv_Ma/:date', async (req, res) => {
+    const { nv_Ma, date } = req.params;
+
+    try {
+        connection.query(
+            `SELECT TinhLuongThucLanh(?, ?) AS luongThucLanh`,
+            [nv_Ma, date],
+            (error, result) => {
+                if (error) {
+                    console.error('Lỗi khi tính lương thực lãnh:', error);
+                    return res.status(500).json({ error: 'Lỗi khi tính lương thực lãnh' });
+                }
+
+                const luongThucLanh = result[0]?.luongThucLanh;
+
+                connection.query(
+                    `SELECT * FROM v_ChiTietLuong WHERE NV_Ma = ? AND L_ThangNam = ?`,
+                    [nv_Ma, date],
+                    (error, chiTietLuong) => {
+                        if (error) {
+                            console.error('Lỗi khi lấy chi tiết lương:', error);
+                            return res.status(500).json({ error: 'Lỗi khi lấy chi tiết lương' });
+                        }
+                        res.json({
+                            luongThucLanh,
+                            chiTietLuong
+                        });
+                    }
+                );
+            }
+        );
+    } catch (error) {
+        console.error('Lỗi hệ thống:', error);
+        res.status(500).json({ error: 'Lỗi hệ thống' });
+    }
+});
+
+
 
 module.exports = router;
