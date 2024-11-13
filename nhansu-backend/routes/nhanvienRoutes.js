@@ -15,15 +15,18 @@ router.get('/', authMiddleware(), (req, res) => {
 
 // API để thêm một nhân viên mới
 router.post('/', authMiddleware('admin'), (req, res) => {
-    const { NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
-    const query = `CALL sp_ThemNV(?, ?, ?, ?, ?, ?)`;
-    connection.query(query, [NV_Ma, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
+    const {NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau } = req.body;
+    console.log(NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau);
+    const query = `CALL sp_ThemNV(?, ?, ?, ?, ?)`;
+    connection.query(query, [NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
         if (err) {
+            console.log(err.message);
             return res.status(500).json({ error: err.message });
         }
-        const querySelect = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
-        connection.query(querySelect, [NV_Ma], (err, rows) => {
+        const querySelect = `SELECT * FROM NHANVIEN WHERE NV_SDT = ?`;
+        connection.query(querySelect, [NV_SDT], (err, rows) => {
             if (err) {
+                console.log(err);
                 return res.status(500).json({ error: err.message });
             }
             res.status(200).json({
@@ -41,9 +44,46 @@ router.put('/:id', authMiddleware('admin'), (req, res) => {
     const query = `CALL sp_CapNhatThongTinNV(?, ?, ?, ?, ?, ?)`;
     connection.query(query, [id, NV_TenNV, NV_NgaySinh, NV_DiaChi, NV_SDT, NV_MatKhau], (err, result) => {
         if (err) {
+            console.log(err);
             return res.status(500).json({ error: err.message });
         }
-        res.json({ message: 'Thông tin nhân viên đã được cập nhật' });
+
+        // Nếu cập nhật thành công, thực hiện truy vấn để lấy thông tin nhân viên vừa được cập nhật
+        const selectQuery = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
+        connection.query(selectQuery, [id], (err, rows) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Trả về đối tượng đã được cập nhật
+            res.status(200).json({ message: 'Thông tin nhân viên đã được cập nhật', updatedData: rows[0] });
+        });
+    });
+});
+
+// API để cập nhật trạng thái NV_KiemDuyet thành 1 theo NV_Ma
+router.put('/kiemduyet/:id', authMiddleware('admin'), (req, res) => {
+    const { id } = req.params;
+    const query = `UPDATE NHANVIEN SET NV_KiemDuyet = 1 WHERE NV_Ma = ?`;
+
+    connection.query(query, [id], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: err.message });
+        }
+
+        // Nếu cập nhật thành công, thực hiện truy vấn để lấy thông tin nhân viên vừa được cập nhật
+        const selectQuery = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
+        connection.query(selectQuery, [id], (err, rows) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Trả về đối tượng đã được cập nhật
+            res.status(200).json({ message: 'Trạng thái kiểm duyệt của nhân viên đã được cập nhật', updatedData: rows[0] });
+        });
     });
 });
 
