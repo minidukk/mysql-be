@@ -62,6 +62,31 @@ router.put('/:id', authMiddleware('admin'), (req, res) => {
     });
 });
 
+// API để cập nhật trạng thái NV_KiemDuyet thành 1 theo NV_Ma
+router.put('/kiemduyet/:id', authMiddleware('admin'), (req, res) => {
+    const { id } = req.params;
+    const query = `UPDATE NHANVIEN SET NV_KiemDuyet = 1 WHERE NV_Ma = ?`;
+
+    connection.query(query, [id], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: err.message });
+        }
+
+        // Nếu cập nhật thành công, thực hiện truy vấn để lấy thông tin nhân viên vừa được cập nhật
+        const selectQuery = `SELECT * FROM NHANVIEN WHERE NV_Ma = ?`;
+        connection.query(selectQuery, [id], (err, rows) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ error: err.message });
+            }
+
+            // Trả về đối tượng đã được cập nhật
+            res.status(200).json({ message: 'Trạng thái kiểm duyệt của nhân viên đã được cập nhật', updatedData: rows[0] });
+        });
+    });
+});
+
 // API để xóa một nhân viên theo NV_Ma
 router.delete('/:id', authMiddleware('admin'), (req, res) => {
     const { id } = req.params;
